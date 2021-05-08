@@ -1,4 +1,5 @@
 import { getConfig } from '@nscode/config';
+import { logger } from '@nscode/logger';
 import Dotenv from 'dotenv';
 
 import { getServerWithPlugins } from './main';
@@ -12,10 +13,10 @@ const start = async () => {
   const server = getServerWithPlugins();
 
   await server.start();
-  console.info(`Server is running on http://${host}:${port} 🚀`);
+  logger.verbose(`Server is running on http://${host}:${port} 🚀`);
 };
 
 start().catch((err) => {
-  console.error(err);
+  logger.error(err);
   process.exit(1);
 });
