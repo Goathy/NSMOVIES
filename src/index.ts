@@ -10,7 +10,7 @@ const port = getConfig('PORT');
 const host = getConfig('HOST');
 
 const start = async () => {
-  const server = getServerWithPlugins();
+  const server = await getServerWithPlugins();
 
   await server.start();
   logger.verbose(`Server is running on http://${host}:${port} 🚀`);

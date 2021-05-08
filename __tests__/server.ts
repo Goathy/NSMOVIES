@@ -5,8 +5,8 @@ import { getServerWithPlugins } from '../src/main';
 describe('Server Module', () => {
   let server: Hapi.Server;
 
-  beforeAll(() => {
-    server = getServerWithPlugins();
+  beforeAll(async () => {
+    server = await getServerWithPlugins();
   });
 
   afterAll(async () => {
