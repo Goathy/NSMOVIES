@@ -3,6 +3,7 @@ import { getConfig } from '@nscode/config';
 import Joi from 'joi';
 
 import { AuthPlugin } from './plugin/auth';
+import { CronPlugin } from './plugin/cron';
 import { DatabasePlugin } from './plugin/database';
 import { addMovie, auth, getMovie, login, register } from './routes';
 
@@ -15,6 +16,8 @@ export const getServerWithPlugins = async () => {
 
   await server.register({ plugin: DatabasePlugin });
   await server.register({ plugin: AuthPlugin });
+  await server.register({ plugin: CronPlugin });
+
   server.route([register, login, auth, addMovie, getMovie]);
   return server;
 };

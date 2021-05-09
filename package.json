@@ -20,7 +20,7 @@
     "tsc": "tsc --noEmit",
     "pretest": "docker-compose up -d",
     "posttest": "docker-compose down -v",
-    "test": "wait-on tcp:5432 -d 2000 --interval 5000 && jest --detectOpenHandles --verbose",
+    "test": "wait-on tcp:5432 -d 2000 --interval 5000 && cross-env NODE_ENV='test' && jest --detectOpenHandles --verbose",
     "eslint": "eslint ./src --ext .ts --fix"
   },
   "author": "Jakub Gałecki <goathy.dev@gmail.com>",
@@ -32,6 +32,7 @@
     "@types/hapi__hapi": "^20.0.8",
     "@types/jest": "^26.0.23",
     "@types/node": "^15.0.2",
+    "@types/node-cron": "^2.0.3",
     "@typescript-eslint/eslint-plugin": "^4.22.1",
     "@typescript-eslint/parser": "^4.22.1",
     "dotenv": "^9.0.0",
@@ -53,6 +54,8 @@
     "@hapi/hapi": "^20.1.2",
     "@prisma/client": "^2.22.1",
     "axios": "^0.21.1",
-    "joi": "^17.4.0"
+    "cross-env": "^7.0.3",
+    "joi": "^17.4.0",
+    "node-cron": "^3.0.0"
   }
 }
