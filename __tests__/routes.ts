@@ -97,4 +97,30 @@ describe('Routes', () => {
       expect(injection.statusCode).toBe(404);
     });
   });
+  describe('[POST] /auth', () => {
+    it('Should login user', async () => {
+      const loginUser = await server.inject({
+        method: 'POST',
+        url: '/auth/login',
+        payload: {
+          email: 'nscode@example.com',
+          password: 'P@ssw0rd!11',
+        },
+      });
+
+      const { token } = loginUser.result as { readonly token: string };
+
+      const injection = await server.inject({
+        method: 'POST',
+        url: '/auth',
+        headers: {
+          authorization: token,
+        },
+      });
+
+      expect(injection.statusCode).toBe(200);
+      expect(injection.result).toHaveProperty('token');
+      expect(injection.result).toHaveProperty('userId');
+    });
+  });
 });

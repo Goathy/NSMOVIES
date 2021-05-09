@@ -12,7 +12,7 @@ export type TLoginPayload = Pick<account, 'email' | 'password'>;
 export const register: Hapi.ServerRoute = {
   method: 'POST',
   path: '/auth/register',
-  options: { validate: { payload: RegisterPayloadSchema } },
+  options: { validate: { payload: RegisterPayloadSchema }, auth: { mode: 'try' } },
   handler: async (request) => {
     const { email, password, type, username } = request.payload as TRegisterPayload;
 
@@ -35,7 +35,7 @@ export const register: Hapi.ServerRoute = {
 export const login: Hapi.ServerRoute = {
   method: 'POST',
   path: '/auth/login',
-  options: { validate: { payload: LoginPayloadSchema } },
+  options: { validate: { payload: LoginPayloadSchema }, auth: { mode: 'try' } },
   handler: async (request) => {
     const { email, password } = request.payload as TLoginPayload;
 
@@ -58,11 +58,31 @@ export const login: Hapi.ServerRoute = {
 
     const token = hash(30);
 
+    const tokenExist = await request.server.app.db.token.count({
+      where: { user_id: user!.id },
+    });
+
+    if (tokenExist) {
+      const token = await request.server.app.db.token.findUnique({ where: { user_id: user!.id } });
+      return { token: `Bearer ${token!.id}` };
+    }
+
     const session = await request.server.app.db.token.create({
       data: { id: token, user_id: user!.id },
       select: { id: true },
     });
 
     return { token: `Bearer ${session.id}` };
+  },
+};
+
+export const auth: Hapi.ServerRoute = {
+  method: 'POST',
+  path: '/auth',
+  handler: (request) => {
+    const userId = request.auth.credentials.userId;
+    const token = request.auth.credentials.token;
+
+    return { token, userId };
   },
 };

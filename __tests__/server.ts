@@ -15,7 +15,12 @@ describe('Server Module', () => {
 
   describe('[GET] /', () => {
     it('Should Be Happy 😊', async () => {
-      server.route({ method: 'GET', path: '/', handler: () => 'Be Happy 😊' });
+      server.route({
+        method: 'GET',
+        path: '/',
+        options: { auth: { mode: 'try' } },
+        handler: () => 'Be Happy 😊',
+      });
 
       const injection = await server.inject({ method: 'GET', url: '/' });
 

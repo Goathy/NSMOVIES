@@ -1,4 +1,4 @@
-import Hapi from '@hapi/hapi';
+import type Hapi from '@hapi/hapi';
 import { PrismaClient } from '@prisma/client';
 
 declare module '@hapi/hapi' {
@@ -21,7 +21,9 @@ export const DatabasePlugin: Hapi.Plugin<never> = {
 
     server.ext({
       type: 'onPostStop',
-      method: async (server) => await server.app.db.$disconnect(),
+      method: async (server) => {
+        await server.app.db.$disconnect();
+      },
     });
   },
 };
