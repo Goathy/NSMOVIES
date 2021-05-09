@@ -136,3 +136,18 @@ export const addMovie: Hapi.ServerRoute = {
     return { status: 'success' };
   },
 };
+
+export const getMovie: Hapi.ServerRoute = {
+  method: 'GET',
+  path: '/movies',
+  handler: async (request) => {
+    const { userId } = request.auth.credentials;
+
+    const movies = await request.server.app.db.movie.findMany({
+      where: { user_id: userId },
+      select: { title: true, director: true, released: true, genre: true },
+    });
+
+    return { data: movies };
+  },
+};

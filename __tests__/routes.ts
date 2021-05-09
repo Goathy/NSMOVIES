@@ -285,4 +285,28 @@ describe('Routes', () => {
       expect(injection.statusCode).toBe(400);
     });
   });
+  describe('[POST] /movies', () => {
+    it('Add movie to database', async () => {
+      const loginUser = await server.inject({
+        method: 'POST',
+        url: '/auth/login',
+        payload: {
+          email: 'nscode@example.com',
+          password: 'P@ssw0rd!11',
+        },
+      });
+
+      const { token } = loginUser.result as { readonly token: string };
+
+      const injection = await server.inject({
+        method: 'GET',
+        url: '/movies',
+        headers: {
+          authorization: token,
+        },
+      });
+
+      expect(injection.statusCode).toBe(200);
+    });
+  });
 });
