@@ -3,7 +3,7 @@ import { getConfig } from '@nscode/config';
 import Joi from 'joi';
 
 import { DatabasePlugin } from './plugin/database';
-import { register } from './routes';
+import { login, register } from './routes';
 
 const Server = () => new Hapi.Server({ host: getConfig('HOST'), port: getConfig('PORT') });
 
@@ -13,6 +13,6 @@ export const getServerWithPlugins = async () => {
   server.validator(Joi);
 
   await server.register({ plugin: DatabasePlugin });
-  server.route([register]);
+  server.route([register, login]);
   return server;
 };
