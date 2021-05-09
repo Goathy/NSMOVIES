@@ -20,6 +20,13 @@
 | npm run build           | Compile server                  |
 | npm run start           | Run compiled server             |
 
+## Important 💥
+
+```sh
+If you want to "dockerize" this application, in ".env" file, replace "DATABASE_URL" "localhost" with name of your database container in "docker-compose"`.
+For example "postgresql://nscode:password@localhost:5432/movie-api?schema=movie_api" will be replaced with "postgresql://nscode:password@db:5432/movie-api?schema=movie_api"
+```
+
 ## ENDPOINTS
 
 ### `[POST] /auth/register` | Register new user
@@ -135,4 +142,11 @@ npm run test
  docker-compose up -d
  npm run build
  npm run start
+```
+
+## Start using docker 📦
+
+```sh
+docker-compose build
+docker-compose up
 ```

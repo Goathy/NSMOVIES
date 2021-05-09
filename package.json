@@ -13,12 +13,13 @@
   "scripts": {
     "prebuild": "rimraf ./dist",
     "build": "tsc --project ./tsconfig.build.json",
+    "bootstrap": "npm run build --workspaces",
     "prisma:introspect": "prisma introspect",
     "prisma:generate": "prisma generate",
-    "start": "node ./dist/index.js",
+    "start": "sleep 5 && node ./dist/index.js",
     "start:dev": "nodemon --watch './**/*.ts' --exec 'ts-node' ./src/index.ts",
     "tsc": "tsc --noEmit",
-    "pretest": "docker-compose up -d",
+    "pretest": "docker-compose up -d db",
     "posttest": "docker-compose down -v",
     "test": "wait-on tcp:5432 -d 2000 --interval 5000 && cross-env NODE_ENV='test' && jest --detectOpenHandles --verbose",
     "eslint": "eslint ./src --ext .ts --fix"
@@ -52,6 +53,8 @@
   },
   "dependencies": {
     "@hapi/hapi": "^20.1.2",
+    "@nscode/config": "file:lib/config",
+    "@nscode/logger": "file:lib/logger",
     "@prisma/client": "^2.22.1",
     "axios": "^0.21.1",
     "cross-env": "^7.0.3",
