@@ -1,13 +1,26 @@
+import qs from 'querystring';
+
 import Boom from '@hapi/boom';
 import type Hapi from '@hapi/hapi';
+import { getConfig } from '@nscode/config';
 import type { account } from '@prisma/client';
+import axios from 'axios';
 
 import { hash, hashPassword, verify } from '../hash';
-import { LoginPayloadSchema, RegisterPayloadSchema } from '../schema';
+import { AddMoviePayloadSchema, LoginPayloadSchema, RegisterPayloadSchema } from '../schema';
 
 export type TRegisterPayload = Pick<account, 'email' | 'username' | 'password' | 'type'>;
 
 export type TLoginPayload = Pick<account, 'email' | 'password'>;
+
+export type TAddMoviePayload = { readonly title: string };
+
+export type TAxiosMovieResponse = {
+  readonly Title: string;
+  readonly Genre: string;
+  readonly Released: string;
+  readonly Director: string;
+};
 
 export const register: Hapi.ServerRoute = {
   method: 'POST',
@@ -84,5 +97,42 @@ export const auth: Hapi.ServerRoute = {
     const token = request.auth.credentials.token;
 
     return { token, userId };
+  },
+};
+
+export const addMovie: Hapi.ServerRoute = {
+  method: 'POST',
+  path: '/movies',
+  options: { validate: { payload: AddMoviePayloadSchema } },
+  handler: async (request) => {
+    const { title } = request.payload as TAddMoviePayload;
+    const { userId, scope } = request.auth.credentials;
+    const parsedTitle = qs.stringify({ t: title });
+
+    const count = await request.server.app.db.session_track.count({ where: { user_id: userId } });
+
+    if (scope?.includes('basic') && count >= 5) {
+      throw Boom.badRequest('Reached limit for free tier.');
+    }
+
+    const { data } = await axios.get<TAxiosMovieResponse>(
+      `http://www.omdbapi.com/?apiKey=${getConfig('API_KEY')}&${parsedTitle}`
+    );
+
+    await request.server.app.db.movie.create({
+      data: {
+        director: data.Director,
+        genre: data.Genre,
+        title: data.Title,
+        released: data.Released,
+        user_id: userId,
+      },
+    });
+
+    if (scope?.includes('basic')) {
+      await request.server.app.db.session_track.create({ data: { user_id: userId } });
+    }
+
+    return { status: 'success' };
   },
 };

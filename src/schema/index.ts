@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-import type { TLoginPayload, TRegisterPayload } from '../routes';
+import type { TAddMoviePayload, TLoginPayload, TRegisterPayload } from '../routes';
 
 export const RegisterPayloadSchema = Joi.object<TRegisterPayload>({
   email: Joi.string().email().required(),
@@ -12,4 +12,8 @@ export const RegisterPayloadSchema = Joi.object<TRegisterPayload>({
 export const LoginPayloadSchema = Joi.object<TLoginPayload>({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
+});
+
+export const AddMoviePayloadSchema = Joi.object<TAddMoviePayload>({
+  title: Joi.string().required(),
 });

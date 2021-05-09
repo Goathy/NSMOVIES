@@ -4,6 +4,9 @@ type NameToType = {
   readonly NODE_ENV: 'production' | 'development' | 'test';
   readonly PORT: number;
   readonly HOST: string;
+  readonly DB_URL: string;
+  readonly SECRET: string;
+  readonly API_KEY: string;
 };
 
 function getConfigForName<T extends keyof NameToType>(name: T): Nil<NameToType[T]>;

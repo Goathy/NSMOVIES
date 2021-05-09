@@ -123,4 +123,166 @@ describe('Routes', () => {
       expect(injection.result).toHaveProperty('userId');
     });
   });
+  describe('[POST] /movies', () => {
+    it('Add movie to database', async () => {
+      const loginUser = await server.inject({
+        method: 'POST',
+        url: '/auth/login',
+        payload: {
+          email: 'nscode@example.com',
+          password: 'P@ssw0rd!11',
+        },
+      });
+
+      const { token } = loginUser.result as { readonly token: string };
+
+      const injection = await server.inject({
+        method: 'POST',
+        url: '/movies',
+        headers: {
+          authorization: token,
+        },
+        payload: {
+          title: 'joker',
+        },
+      });
+
+      expect(injection.statusCode).toBe(200);
+    });
+    it('Should add & increase session_track from basic users', async () => {
+      const email = 'basic@exmaple.com';
+      const password = 'password';
+
+      await server.inject({
+        method: 'POST',
+        url: '/auth/register',
+        payload: {
+          username: 'basic',
+          email,
+          password,
+          type: 0,
+        },
+      });
+
+      const loginUser = await server.inject({
+        method: 'POST',
+        url: '/auth/login',
+        payload: {
+          email,
+          password,
+        },
+      });
+
+      const { token } = loginUser.result as { readonly token: string };
+
+      const user = await server.inject({
+        method: 'POST',
+        url: '/auth',
+        headers: {
+          authorization: token,
+        },
+      });
+
+      const { userId } = user.result as { readonly userId: number };
+
+      const injection = await server.inject({
+        method: 'POST',
+        url: '/movies',
+        headers: {
+          authorization: token,
+        },
+        payload: {
+          title: 'joker',
+        },
+      });
+
+      const count = await server.app.db.session_track.count({ where: { user_id: userId } });
+
+      expect(count).toBeGreaterThan(0);
+      expect(injection.statusCode).toBe(200);
+    });
+    it('Should return 400 for basic users when try to add more then 5 movies', async () => {
+      const email = 'basic@exmaple.com';
+      const password = 'password';
+
+      const loginUser = await server.inject({
+        method: 'POST',
+        url: '/auth/login',
+        payload: {
+          email,
+          password,
+        },
+      });
+
+      const { token } = loginUser.result as { readonly token: string };
+
+      await server.inject({
+        method: 'POST',
+        url: '/movies',
+        headers: {
+          authorization: token,
+        },
+        payload: {
+          title: 'joker',
+        },
+      });
+
+      await server.inject({
+        method: 'POST',
+        url: '/movies',
+        headers: {
+          authorization: token,
+        },
+        payload: {
+          title: 'joker',
+        },
+      });
+
+      await server.inject({
+        method: 'POST',
+        url: '/movies',
+        headers: {
+          authorization: token,
+        },
+        payload: {
+          title: 'joker',
+        },
+      });
+
+      await server.inject({
+        method: 'POST',
+        url: '/movies',
+        headers: {
+          authorization: token,
+        },
+        payload: {
+          title: 'joker',
+        },
+      });
+
+      await server.inject({
+        method: 'POST',
+        url: '/movies',
+        headers: {
+          authorization: token,
+        },
+        payload: {
+          title: 'joker',
+        },
+      });
+
+      const injection = await server.inject({
+        method: 'POST',
+        url: '/movies',
+        headers: {
+          authorization: token,
+        },
+        payload: {
+          title: 'joker',
+        },
+      });
+
+      expect(injection.statusCode).toBe(400);
+    });
+  });
 });

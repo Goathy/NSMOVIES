@@ -26,3 +26,24 @@ CREATE TABLE "movie_api".token (
 
 
 ALTER TABLE "movie_api".token OWNER TO nscode;
+
+
+CREATE TABLE "movie_api".movie (
+    id SERIAL NOT NULL CONSTRAINT movie_pk PRIMARY KEY,
+    user_id INTEGER,
+    title TEXT,
+    released TEXT,
+    genre TEXT,
+    director TEXT
+);
+
+ALTER TABLE "movie_api".movie OWNER TO nscode;
+
+
+CREATE TABLE "movie_api".session_track (
+    id SERIAL NOT NULL CONSTRAINT session_track_pk PRIMARY KEY,
+    user_id INTEGER,
+    date TIMESTAMP DEFAULT NOW()
+);
+
+ALTER TABLE "movie_api".session_track OWNER TO nscode;
